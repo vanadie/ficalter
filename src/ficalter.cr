@@ -243,6 +243,22 @@ def process_ics(url : String, includes : Array(String), excludes : Array(String)
   end
 end
 
+class RealIPPatcher
+  include HTTP::Handler
+
+  def call(context)
+    req = context.request
+
+    real_ip = req.headers["X-Real-IP"]?
+    if !real_ip.nil?
+      # port is required but ignored in this context
+      req.remote_address = Socket::IPAddress.new(real_ip, 0)
+    end
+
+    call_next(context)
+  end
+end
+
 
 class CalendarHandler
   include HTTP::Handler
@@ -320,6 +336,7 @@ def main()
     # Booting webserver
     serv = HTTP::Server.new [
       HTTP::ErrorHandler.new,
+      RealIPPatcher.new,
       HTTP::LogHandler.new,
       HTTP::CompressHandler.new,
       CalendarHandler.new(upstream),
