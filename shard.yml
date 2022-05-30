@@ -1,0 +1,13 @@
+name: ficalter
+version: 0.1.0
+
+authors:
+  - vanadie
+
+targets:
+  ficalter:
+    main: src/ficalter.cr
+
+crystal: 1.4.1
+
+license: LGPL-2.1
